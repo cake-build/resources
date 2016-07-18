@@ -27,7 +27,7 @@ SCRIPT="build.cake"
 TARGET="Default"
 CONFIGURATION="Release"
 VERBOSITY="verbose"
-DRYRUN=
+DRYRUN=false
 SHOW_VERSION=false
 SCRIPT_ARGUMENTS=()
 
