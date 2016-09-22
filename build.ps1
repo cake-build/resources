@@ -178,6 +178,37 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
     Pop-Location
 }
 
+$CakeArgs = ""
+if($ScriptArgs.length -ne 0) {
+    $i = 0
+    while ($i -lt $ScriptArgs.Length) {
+        $currentArg = $ScriptArgs[$i]
+        $i += 1
+
+        if ($currentArg -like "*=*") {
+            # regular param that cake.exe will expect. add it to the string and move on
+            $CakeArgs = $CakeArgs + " " + $currentArg
+            continue
+        }
+
+        if ($i -eq $ScriptArgs.Length -or $ScriptArgs[$i].StartsWith("-")) {
+            # this is the last parameter or the next parameter is another parameter name
+            # so we can assume this is a bool
+            $CakeArgs = $CakeArgs + " " + $currentArg + "=true"
+            continue
+        }
+
+        # not at the last parameter nor are we a bool, so lets take the next 
+        # value in the array and create the -paramName=paramValue that cake will expect
+        $nextArg = $ScriptArgs[$i]
+        if ($nextArg -like "* *" -or $nextArg -like "*.*" -or $nextArg -like "*\\*" -or $nextArg -like "*/*" ) {
+            $nextArg = "`"$nextArg`""
+        }
+        $CakeArgs = $CakeArgs + " " + $currentArg + "=" + $nextArg
+        $i += 1    
+    }
+}
+
 # Make sure that Cake has been installed.
 if (!(Test-Path $CAKE_EXE)) {
     Throw "Could not find Cake.exe at $CAKE_EXE"
@@ -185,5 +216,9 @@ if (!(Test-Path $CAKE_EXE)) {
 
 # Start Cake
 Write-Host "Running build script..."
-Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $ScriptArgs"
+$CakeArgs
+$exec ="& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $CakeArgs"
+$exec
+Write-Verbose $exec
+Invoke-Expression $exec
 exit $LASTEXITCODE
