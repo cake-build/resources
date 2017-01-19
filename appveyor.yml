@@ -1,0 +1,13 @@
+version: 1.0.{build}
+build_script:
+- ps: >-
+    'Information("Test success: {0}", DateTime.Now);' > build.cake
+
+    'Testing with PowerShell Current'
+
+    ./build.ps1
+
+
+    'Testing with PowerShell V2'
+
+    PowerShell.exe -Version 2.0 -File .\build.ps1
