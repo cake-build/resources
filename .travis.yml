@@ -1,0 +1,6 @@
+language: csharp
+script:
+  - echo "Information(Context.Environment.Runtime.CakeVersion.ToString());" > build.cake
+  - ./build.sh
+os:
+  - linux
