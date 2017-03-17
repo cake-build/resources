@@ -7,7 +7,22 @@ build_script:
 
     ./build.ps1
 
-
     'Testing with PowerShell V2'
 
     PowerShell.exe -Version 2.0 -File .\build.ps1
+
+    New-Item -ItemType Directory ./tools/modules
+
+    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Paket.Module"" version=""1.2.2"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
+
+      New-Item -ItemType Directory ./tools/addins
+
+    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.MicrosoftTeams"" version=""0.3.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/addins/packages.config
+
+    'Testing with PowerShell Module & Addin restore'
+
+    ./build.ps1
+
+artifacts:
+  - path: '**\*'
+    name: Resources
