@@ -48,13 +48,13 @@ build_script:
 
     'Creating Test Module Files'
 
-    New-Item -ItemType Directory ./tools/modules
+    New-Item -ItemType Directory ./.cakebuild/modules
 
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Chocolatey.Module"" version=""0.5.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
+    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Chocolatey.Module"" version=""0.5.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./.cakebuild/modules/packages.config
 
-    New-Item -ItemType Directory ./tools/addins
+    New-Item -ItemType Directory ./.cakebuild/addins
 
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.MicrosoftTeams"" version=""0.7.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/addins/packages.config
+    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.MicrosoftTeams"" version=""0.7.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./.cakebuild/addins/packages.config
 
 
     'Testing with PowerShell Module & Addin restore'

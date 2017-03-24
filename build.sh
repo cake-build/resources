@@ -8,15 +8,15 @@
 
 # Define directories.
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-TOOLS_DIR=$SCRIPT_DIR/tools
-ADDINS_DIR=$TOOLS_DIR/Addins
-MODULES_DIR=$TOOLS_DIR/Modules
-NUGET_EXE=$TOOLS_DIR/nuget.exe
-CAKE_EXE=$TOOLS_DIR/Cake/Cake.exe
-PACKAGES_CONFIG=$TOOLS_DIR/packages.config
-PACKAGES_CONFIG_MD5=$TOOLS_DIR/packages.config.md5sum
-ADDINS_PACKAGES_CONFIG=$ADDINS_DIR/packages.config
-MODULES_PACKAGES_CONFIG=$MODULES_DIR/packages.config
+export CAKE_PATHS_TOOLS=$SCRIPT_DIR/.cakebuild
+export CAKE_PATHS_ADDINS=$CAKE_PATHS_TOOLS/Addins
+export CAKE_PATHS_MODULES=$CAKE_PATHS_TOOLS/Modules
+NUGET_EXE=$CAKE_PATHS_TOOLS/nuget.exe
+CAKE_EXE=$CAKE_PATHS_TOOLS/Cake/Cake.exe
+PACKAGES_CONFIG=$CAKE_PATHS_TOOLS/packages.config
+PACKAGES_CONFIG_MD5=$CAKE_PATHS_TOOLS/packages.config.md5sum
+ADDINS_PACKAGES_CONFIG=$CAKE_PATHS_ADDINS/packages.config
+MODULES_PACKAGES_CONFIG=$CAKE_PATHS_MODULES/packages.config
 
 # Define md5sum or md5 depending on Linux/OSX
 MD5_EXE=
@@ -41,14 +41,14 @@ for i in "$@"; do
 done
 
 # Make sure the tools folder exist.
-if [ ! -d "$TOOLS_DIR" ]; then
-  mkdir "$TOOLS_DIR"
+if [ ! -d "$CAKE_PATHS_TOOLS" ]; then
+  mkdir "$CAKE_PATHS_TOOLS"
 fi
 
 # Make sure that packages.config exist.
-if [ ! -f "$TOOLS_DIR/packages.config" ]; then
+if [ ! -f "$CAKE_PATHS_TOOLS/packages.config" ]; then
     echo "Downloading packages.config..."
-    curl -Lsfo "$TOOLS_DIR/packages.config" https://cakebuild.net/download/bootstrapper/packages
+    curl -Lsfo "$CAKE_PATHS_TOOLS/packages.config" https://cakebuild.net/download/bootstrapper/packages
     if [ $? -ne 0 ]; then
         echo "An error occurred while downloading packages.config."
         exit 1
@@ -66,7 +66,7 @@ if [ ! -f "$NUGET_EXE" ]; then
 fi
 
 # Restore tools from NuGet.
-pushd "$TOOLS_DIR" >/dev/null
+pushd "$CAKE_PATHS_TOOLS" >/dev/null
 if [ ! -f "$PACKAGES_CONFIG_MD5" ] || [ "$( cat "$PACKAGES_CONFIG_MD5" | sed 's/\r$//' )" != "$( $MD5_EXE "$PACKAGES_CONFIG" | awk '{ print $1 }' )" ]; then
     find . -type d ! -name . ! -name 'Cake.Bakery' | xargs rm -rf
 fi
@@ -83,7 +83,7 @@ popd >/dev/null
 
 # Restore addins from NuGet.
 if [ -f "$ADDINS_PACKAGES_CONFIG" ]; then
-    pushd "$ADDINS_DIR" >/dev/null
+    pushd "$CAKE_PATHS_ADDINS" >/dev/null
 
     mono "$NUGET_EXE" install -ExcludeVersion
     if [ $? -ne 0 ]; then
@@ -96,7 +96,7 @@ fi
 
 # Restore modules from NuGet.
 if [ -f "$MODULES_PACKAGES_CONFIG" ]; then
-    pushd "$MODULES_DIR" >/dev/null
+    pushd "$CAKE_PATHS_MODULES" >/dev/null
 
     mono "$NUGET_EXE" install -ExcludeVersion
     if [ $? -ne 0 ]; then

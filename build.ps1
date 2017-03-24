@@ -104,21 +104,21 @@ if(!$PSScriptRoot){
     $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 }
 
-$TOOLS_DIR = Join-Path $PSScriptRoot "tools"
-$ADDINS_DIR = Join-Path $TOOLS_DIR "Addins"
-$MODULES_DIR = Join-Path $TOOLS_DIR "Modules"
-$NUGET_EXE = Join-Path $TOOLS_DIR "nuget.exe"
-$CAKE_EXE = Join-Path $TOOLS_DIR "Cake/Cake.exe"
+$env:CAKE_PATHS_TOOLS = Join-Path $PSScriptRoot ".cakebuild"
+$env:CAKE_PATHS_ADDINS = Join-Path $env:CAKE_PATHS_TOOLS "Addins"
+$env:CAKE_PATHS_MODULES = Join-Path $env:CAKE_PATHS_TOOLS "Modules"
+$NUGET_EXE = Join-Path $env:CAKE_PATHS_TOOLS "nuget.exe"
+$CAKE_EXE = Join-Path $env:CAKE_PATHS_TOOLS "Cake/Cake.exe"
 $NUGET_URL = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$PACKAGES_CONFIG = Join-Path $TOOLS_DIR "packages.config"
-$PACKAGES_CONFIG_MD5 = Join-Path $TOOLS_DIR "packages.config.md5sum"
-$ADDINS_PACKAGES_CONFIG = Join-Path $ADDINS_DIR "packages.config"
-$MODULES_PACKAGES_CONFIG = Join-Path $MODULES_DIR "packages.config"
+$PACKAGES_CONFIG = Join-Path $env:CAKE_PATHS_TOOLS "packages.config"
+$PACKAGES_CONFIG_MD5 = Join-Path $env:CAKE_PATHS_TOOLS "packages.config.md5sum"
+$ADDINS_PACKAGES_CONFIG = Join-Path $env:CAKE_PATHS_ADDINS "packages.config"
+$MODULES_PACKAGES_CONFIG = Join-Path $env:CAKE_PATHS_MODULES "packages.config"
 
-# Make sure tools folder exists
-if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
+# Make sure CakeBuild folder exists
+if ((Test-Path $PSScriptRoot) -and !(Test-Path $env:CAKE_PATHS_TOOLS)) {
     Write-Verbose -Message "Creating tools directory..."
-    New-Item -Path $TOOLS_DIR -Type directory | out-null
+    New-Item -Path $env:CAKE_PATHS_TOOLS -Type directory | out-null
 }
 
 # Make sure that packages.config exist.
@@ -160,7 +160,7 @@ $ENV:NUGET_EXE = $NUGET_EXE
 # Restore tools from NuGet?
 if(-Not $SkipToolPackageRestore.IsPresent) {
     Push-Location
-    Set-Location $TOOLS_DIR
+    Set-Location $env:CAKE_PATHS_TOOLS
 
     # Check for changes in packages.config and remove installed tools if true.
     [string] $md5Hash = MD5HashFile($PACKAGES_CONFIG)
@@ -172,7 +172,7 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
     }
 
     Write-Verbose -Message "Restoring tools from NuGet..."
-    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$TOOLS_DIR`""
+    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$env:CAKE_PATHS_TOOLS`""
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occurred while restoring NuGet tools."
@@ -189,10 +189,10 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
 # Restore addins from NuGet
 if (Test-Path $ADDINS_PACKAGES_CONFIG) {
     Push-Location
-    Set-Location $ADDINS_DIR
+    Set-Location $env:CAKE_PATHS_ADDINS
 
     Write-Verbose -Message "Restoring addins from NuGet..."
-    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$ADDINS_DIR`""
+    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$env:CAKE_PATHS_ADDINS`""
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occurred while restoring NuGet addins."
@@ -206,10 +206,10 @@ if (Test-Path $ADDINS_PACKAGES_CONFIG) {
 # Restore modules from NuGet
 if (Test-Path $MODULES_PACKAGES_CONFIG) {
     Push-Location
-    Set-Location $MODULES_DIR
+    Set-Location $env:CAKE_PATHS_MODULES
 
     Write-Verbose -Message "Restoring modules from NuGet..."
-    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$MODULES_DIR`""
+    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$env:CAKE_PATHS_MODULES`""
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occurred while restoring NuGet modules."
@@ -238,5 +238,5 @@ $cakeArguments += $ScriptArgs
 
 # Start Cake
 Write-Host "Running build script..."
-&$CAKE_EXE $cakeArguments
+&$CAKE_EXE $cakeArguments --paths_tools=$env:CAKE_PATHS_TOOLS
 exit $LASTEXITCODE

@@ -3,10 +3,10 @@ script:
   - echo "Information(Context.Environment.Runtime.CakeVersion.ToString());" > build.cake
   - ./build.sh || exit 1
   - echo "Testing with modules/addin packages.config"
-  - mkdir tools/modules
-  - echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<packages>\r\n    <package id=\"Cake.Chocolatey.Module\" version=\"0.5.0\" />\r\n</packages>" > ./tools/modules/packages.config
-  - mkdir tools/addins
-  - echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<packages>\r\n    <package id=\"Cake.MicrosoftTeams\" version=\"0.7.0\" />\r\n</packages>" > ./tools/addins/packages.config
+  - mkdir .cakebuild/modules
+  - echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<packages>\r\n    <package id=\"Cake.Chocolatey.Module\" version=\"0.5.0\" />\r\n</packages>" > ./.cakebuild/modules/packages.config
+  - mkdir .cakebuild/addins
+  - echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<packages>\r\n    <package id=\"Cake.MicrosoftTeams\" version=\"0.7.0\" />\r\n</packages>" > ./.cakebuild/addins/packages.config
   - ./build.sh || exit 1
   - ls -D -R
 os:
