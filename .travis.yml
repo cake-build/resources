@@ -1,7 +1,10 @@
 language: csharp
 script:
-  - echo "Information(Context.Environment.Runtime.CakeVersion.ToString());" > build.cake
+  - echo "Task(\"Default\").Does(() => {}); Task(\"Task.With.Dots\").Does(() => {}); RunTarget(Argument<string>(\"target\"));" > build.cake
+  - echo "Testing (Default task)"
   - ./build.sh || exit 1
+  - echo "Testing (Specific task)"
+  - ./build.sh --target Task.With.Dots || exit 1
   - echo "Testing with modules/addin packages.config"
   - mkdir tools/modules
   - echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<packages>\r\n    <package id=\"Cake.Paket.Module\" version=\"1.2.2\" />\r\n</packages>" > ./tools/modules/packages.config
