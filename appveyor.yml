@@ -1,27 +1,113 @@
 version: 1.0.{build}
 build_script:
 - ps: >-
+    'Creating Test Cake File'
+
     'Information("Test success: {0}", DateTime.Now);' > build.cake
+
 
     'Testing with PowerShell Current'
 
-    ./build.ps1
+    $OutputA = ./build.ps1 2>&1
+
+    $OutputA
+
+    if ($LastExitCode -ne 0)
+
+    {
+      'PowerShell 3 failed'
+      exit 3
+    }
+
+
+
 
     'Testing with PowerShell V2'
 
-    PowerShell.exe -Version 2.0 -File .\build.ps1
+    $OutputB = PowerShell -Version 2.0 -File .\build.ps1 2>&1
+
+    $OutputB
+
+    if ($LastExitCode -ne 0)
+
+    {
+      'PowerShell 2 failed'
+      exit 2
+    }
+
+
+
+    'Creating Test Module Files'
 
     New-Item -ItemType Directory ./tools/modules
 
     "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Paket.Module"" version=""1.2.2"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
 
-      New-Item -ItemType Directory ./tools/addins
+    New-Item -ItemType Directory ./tools/addins
 
     "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.MicrosoftTeams"" version=""0.3.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/addins/packages.config
 
+
     'Testing with PowerShell Module & Addin restore'
 
-    ./build.ps1
+    $OutputC = ./build.ps1 2>&1
+
+    $OutputC
+
+    if ($LastExitCode -ne 0)
+
+    {
+      'PowerShell Module failed'
+      exit 2
+    }
+
+
+
+    'Validating StdErr'
+
+    $stdErrA = $OutputA | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
+
+    $stdErrB = $OutputB | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
+
+    $stdErrC = $OutputC | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
+
+
+    $hasStdErrA = ($stdErrA | Measure-Object).Count -gt 0
+
+    $hasStdErrB = ($stdErrB | Measure-Object).Count -gt 0
+
+    $hasStdErrC = ($stdErrC | Measure-Object).Count -gt 0
+
+
+    if ($hasStdErrA)
+
+    {
+        'Std Error V3'
+        $stdErrA
+        exit 3
+    }
+
+
+    if ($hasStdErrB)
+
+    {
+        'Std Error V2'
+        $stdErrB
+        exit 2
+    }
+
+
+    if ($hasStdErrC)
+
+    {
+        'Module Error'
+        $stdErrC
+        exit 4
+    }
+
+
+    'No Issues found'
+
 
 artifacts:
   - path: '**\*'
