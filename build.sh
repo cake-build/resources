@@ -9,8 +9,8 @@
 # Define directories.
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 TOOLS_DIR=$SCRIPT_DIR/tools
-ADDINS_DIR=$TOOLS_DIR/addins
-MODULES_DIR=$TOOLS_DIR/modules
+ADDINS_DIR=$TOOLS_DIR/Addins
+MODULES_DIR=$TOOLS_DIR/Modules
 NUGET_EXE=$TOOLS_DIR/nuget.exe
 CAKE_EXE=$TOOLS_DIR/Cake/Cake.exe
 PACKAGES_CONFIG=$TOOLS_DIR/packages.config
