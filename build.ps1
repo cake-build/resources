@@ -81,12 +81,13 @@ function MD5HashFile([string] $filePath)
     }
 }
 
-function GetProxyEnabledWebClient()
+function GetProxyEnabledWebClient
 {
     $wc = New-Object System.Net.WebClient
     $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
     $proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials        
     $wc.Proxy = $proxy
+    return $wc
 }
 
 Write-Host "Preparing to run build script..."
@@ -115,8 +116,8 @@ if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
 # Make sure that packages.config exist.
 if (!(Test-Path $PACKAGES_CONFIG)) {
     Write-Verbose -Message "Downloading packages.config..."    
-    try {
-        $wc = (GetProxyEnabledWebClient)
+    try {        
+        $wc = GetProxyEnabledWebClient
         $wc.DownloadFile("https://cakebuild.net/download/bootstrapper/packages", $PACKAGES_CONFIG) } catch {
         Throw "Could not download packages.config."
     }
@@ -137,7 +138,7 @@ if (!(Test-Path $NUGET_EXE)) {
 if (!(Test-Path $NUGET_EXE)) {
     Write-Verbose -Message "Downloading NuGet.exe..."
     try {
-        $wc = (GetProxyEnabledWebClient)
+        $wc = GetProxyEnabledWebClient
         $wc.DownloadFile($NUGET_URL, $NUGET_EXE)
     } catch {
         Throw "Could not download NuGet.exe."
