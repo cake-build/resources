@@ -1,6 +1,13 @@
 version: 1.0.{build}
 build_script:
 - ps: >-
+
+    # Temporarily skip verification and opt-in to new in-proc NuGet
+
+    $ENV:CAKE_SETTINGS_SKIPVERIFICATION='true'
+
+    $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true'
+
     'Creating Test Cake File'
 
     'Information("Test success: {0}", DateTime.Now);' > build.cake
@@ -16,6 +23,7 @@ build_script:
 
     {
       'PowerShell 3 failed'
+
       exit 3
     }
 
@@ -32,6 +40,7 @@ build_script:
 
     {
       'PowerShell 2 failed'
+
       exit 2
     }
 
@@ -58,6 +67,7 @@ build_script:
 
     {
       'PowerShell Module failed'
+
       exit 2
     }
 
@@ -83,7 +93,9 @@ build_script:
 
     {
         'Std Error V3'
+
         $stdErrA
+
         exit 3
     }
 
@@ -92,7 +104,9 @@ build_script:
 
     {
         'Std Error V2'
+
         $stdErrB
+
         exit 2
     }
 
@@ -101,7 +115,9 @@ build_script:
 
     {
         'Module Error'
+
         $stdErrC
+
         exit 4
     }
 
