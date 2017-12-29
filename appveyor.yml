@@ -50,7 +50,7 @@ build_script:
 
     New-Item -ItemType Directory ./tools/modules
 
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Paket.Module"" version=""1.2.2"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
+    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.UrlLoadDirective.Module"" version=""1.0.2"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
 
     New-Item -ItemType Directory ./tools/addins
 
