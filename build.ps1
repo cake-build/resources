@@ -158,8 +158,11 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
     if((!(Test-Path $PACKAGES_CONFIG_MD5)) -Or
       ($md5Hash -ne (Get-Content $PACKAGES_CONFIG_MD5 ))) {
         Write-Verbose -Message "Missing or changed package.config hash..."
-        Get-ChildItem -Exclude packages.config,nuget.exe,Cake.Bakery |
-        Remove-Item -Recurse
+        Get-ChildItem -Recurse -Exclude packages.config,nuget.exe,Cake.Bakery |
+        Select-Object -ExpandProperty FullName |
+        Where-Object {($_ -notlike '*\Modules') -and ($_ -notlike '*\Addins')} |
+        Sort-Object length -Descending |
+        Remove-Item -force -Recurse
     }
 
     Write-Verbose -Message "Restoring tools from NuGet..."
