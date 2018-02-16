@@ -34,6 +34,10 @@ CAKE_ARGUMENTS=()
 for i in "$@"; do
     case $1 in
         -s|--script) SCRIPT="$2"; shift ;;
+        -t|--target) CAKE_ARGUMENTS+=("--target=$2"); shift ;;
+        -c|--configuration) CAKE_ARGUMENTS+=("--configuration=$2"); shift ;;
+        -v|--verbosity) CAKE_ARGUMENTS+=("--verbosity=$2"); shift ;;
+        -d) CAKE_ARGUMENTS+=("--dryrun") ;;
         --) shift; CAKE_ARGUMENTS+=("$@"); break ;;
         *) CAKE_ARGUMENTS+=("$1") ;;
     esac
