@@ -89,8 +89,11 @@ function GetProxyEnabledWebClient
     return $wc
 }
 
+if (!$PSScriptRoot) { $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition }
+
 $TOOLS_DIR = Join-Path $PSScriptRoot "tools"
 $CAKE_EXE_DIR = ""
+
 if ($UseNetCore) {
     $CAKE_DIR_NAME = "Cake.CoreCLR"
 } else {
