@@ -50,6 +50,9 @@ Param(
     [string[]]$ScriptArgs
 )
 
+# Ensure usage of correct TLS for downloading artifacts from GitHub, etc.
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
+
 [Reflection.Assembly]::LoadWithPartialName("System.Security") | Out-Null
 function MD5HashFile([string] $filePath)
 {
