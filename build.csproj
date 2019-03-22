@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##########################################################################
+# This is the Cake bootstrapper script for MSBuild environment.
+# This file was downloaded from https://github.com/cake-build/resources
+# Feel free to change this file to fit your needs.
+##########################################################################
+-->
+<Project DefaultTargets="Bootstrap" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <CakeId Condition="'$(MSBuildRuntimeType)'=='Full'">Cake</CakeId>
+    <CakeId Condition="'$(MSBuildRuntimeType)'=='Core'">Cake.CoreCLR</CakeId>
+    <CakeVersion>0.32.1</CakeVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(ForceDownloaPackagesConfig)'==''">
+    <packages_config Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?>" />
+    <packages_config Include="&lt;packages>" />
+    <packages_config Include="    &lt;package id=&quot;$(CakeId)&quot; version=&quot;$(CakeVersion)&quot; />" />
+    <packages_config Include="&lt;/packages>" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(ForceDownloadNuGetFile)'==''">
+    <NuGetVersion>4.9.4</NuGetVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NuGetCommandArguments></NuGetCommandArguments>
+    <NuGet_ConfigFile></NuGet_ConfigFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Define directories">
+    <SCRIPT_DIR>$(MSBuildThisFileDirectory)</SCRIPT_DIR>
+    <TOOLS_DIR>$([System.IO.Path]::Combine($(SCRIPT_DIR), tools))</TOOLS_DIR>
+    <ADDINS_DIR>$([System.IO.Path]::Combine($(TOOLS_DIR), Addins))</ADDINS_DIR>
+    <MODULES_DIR>$([System.IO.Path]::Combine($(TOOLS_DIR), Modules))</MODULES_DIR>
+    <NUGET_EXE>$([System.IO.Path]::Combine($(TOOLS_DIR), nuget.exe))</NUGET_EXE>
+    <CAKE_EXE Condition="'$(CakeId)'=='Cake'">$([System.IO.Path]::Combine($(TOOLS_DIR), Cake, Cake.exe))</CAKE_EXE>
+    <CAKE_EXE Condition="'$(CakeId)'=='Cake.CoreCLR'">$([System.IO.Path]::Combine($(TOOLS_DIR), Cake.CoreCLR, Cake.dll))</CAKE_EXE>
+    <PACKAGES_CONFIG>$([System.IO.Path]::Combine($(TOOLS_DIR), packages.config))</PACKAGES_CONFIG>
+    <PACKAGES_CONFIG_MD5>$([System.IO.Path]::Combine($(TOOLS_DIR), packages.config.md5sum))</PACKAGES_CONFIG_MD5>
+    <ADDINS_PACKAGES_CONFIG>$([System.IO.Path]::Combine($(ADDINS_DIR), packages.config))</ADDINS_PACKAGES_CONFIG>
+    <MODULES_PACKAGES_CONFIG>$([System.IO.Path]::Combine($(MODULES_DIR), packages.config))</MODULES_PACKAGES_CONFIG>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Define default arguments">
+    <SCRIPT>build.cake</SCRIPT>
+    <SCRIPT_FULL_PATH>$([System.IO.Path]::Combine($(SCRIPT_DIR), $(SCRIPT)))</SCRIPT_FULL_PATH>
+    <CAKE_ARGUMENTS></CAKE_ARGUMENTS>
+  </PropertyGroup>
+
+  <!-- Define md5 -->
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Core'">
+    <NetCoreAppVersion>netcoreapp2.1</NetCoreAppVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
+    <csproj Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?>" />
+    <csproj Include="&lt;Project DefaultTargets=&quot;Build&quot; xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;>" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MSBuildRuntimeType)'=='Core'">
+    <csproj Include="&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;>" />
+    <csproj Include="  " />
+    <csproj Include="  &lt;PropertyGroup>" />
+    <csproj Include="    &lt;OutputType>Exe&lt;/OutputType>" />
+    <csproj Include="    &lt;TargetFramework>$(NetCoreAppVersion)&lt;/TargetFramework>" />
+    <csproj Include="  &lt;/PropertyGroup>" />
+    <csproj Include="  " />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(ForceDownloadNuGetFile)'=='' And '$(MSBuildRuntimeType)'=='Full'">
+    <csproj Include="  &lt;Import Project=&quot;$(MSBuildBinPath)\Microsoft.Common.CurrentVersion.targets&quot; />" />
+  </ItemGroup>
+
+  <!-- Cake.Bakery -Version 0.3.0 / 0.2.0 / 0.1.2 / 0.1.1 / 0.1.0  -->
+  <ItemGroup Condition="'$(ForceDownloadNuGetFile)'==''">
+    <csproj Include="  &lt;ItemGroup>" />
+    <csproj Include="    &lt;PackageReference Include=&quot;NuGet.CommandLine&quot; Version=&quot;$(NuGetVersion)&quot; />" />
+    <csproj Include="  &lt;/ItemGroup>" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(ForceDownloadNuGetFile)'=='' And '$(MSBuildRuntimeType)'=='Full'">
+    <csproj Include="  &lt;Target Name=&quot;Build&quot; DependsOnTargets=&quot;Restore&quot;>" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(ForceDownloadNuGetFile)'!='' And '$(MSBuildRuntimeType)'=='Full'">
+    <csproj Include="  &lt;Target Name=&quot;Build&quot;>" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
+    <csproj Include="    &lt;Csc" />
+    <csproj Include="      Sources=&quot;$([System.IO.Path]::Combine($(SCRIPT_DIR), tools, MD5HashFile.cs))&quot;" />
+    <csproj Include="      OutputAssembly=&quot;$([System.IO.Path]::Combine($(SCRIPT_DIR), tools, MD5HashFile.exe))&quot; />" />
+    <csproj Include="  &lt;/Target> "/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <csproj Include="&lt;/Project>" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <cs Include="using System%3b" />
+    <cs Include="using System.IO%3b" />
+    <cs Include="  " />
+    <cs Include="namespace ConsoleApplication" />
+    <cs Include="{" />
+    <cs Include="    class Program" />
+    <cs Include="    {" />
+    <cs Include="        public static string MD5HashFile(string filePath)" />
+    <cs Include="        {" />
+    <cs Include="            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))" />
+    <cs Include="            {" />
+    <cs Include="                return string.Empty%3b" />
+    <cs Include="            }" />
+    <cs Include="  " />
+    <cs Include="            using (var md5 = System.Security.Cryptography.MD5.Create())" />
+    <cs Include="            {" />
+    <cs Include="                using (var file = File.OpenRead(filePath))" />
+    <cs Include="                {" />
+    <cs Include="                    return BitConverter.ToString(md5.ComputeHash(file))%3b" />
+    <cs Include="                }" />
+    <cs Include="            }" />
+    <cs Include="        }" />
+    <cs Include="  " />
+    <cs Include="        public static void SaveContents(string filePath, string contents)" />
+    <cs Include="        {" />
+    <cs Include="            if (string.IsNullOrEmpty(filePath))" />
+    <cs Include="            {" />
+    <cs Include="                return%3b" />
+    <cs Include="            }" />
+    <cs Include="  " />
+    <cs Include="            File.WriteAllText(filePath, contents)%3b" />
+    <cs Include="        }" />
+    <cs Include="  " />
+    <cs Include="        public static void Main(string[] args)" />
+    <cs Include="        {" />
+    <cs Include="            if (2 == args.Length) SaveContents(args[1], MD5HashFile(args[0]))%3b" />
+    <cs Include="        }" />
+    <cs Include="    }" />
+    <cs Include="}" />
+  </ItemGroup>
+
+  <PropertyGroup Label="MD5HashFile Project">
+    <MD5HashFile_cs>$([System.IO.Path]::Combine($(TOOLS_DIR), MD5HashFile.cs))</MD5HashFile_cs>
+    <MD5HashFile_csproj>$([System.IO.Path]::Combine($(TOOLS_DIR), MD5HashFile.csproj))</MD5HashFile_csproj>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
+    <MD5_Binary>$([System.IO.Path]::Combine($(TOOLS_DIR), MD5HashFile.exe))</MD5_Binary>
+    <MD5>&quot;$(MD5_Binary)&quot;</MD5>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Core'">
+    <BuildTool Condition="Exists('$(DOTNET_HOST_PATH)')">$(DOTNET_HOST_PATH)</BuildTool>
+    <MD5_Binary>$([System.IO.Path]::Combine($(TOOLS_DIR), bin, Release, $(NetCoreAppVersion), MD5HashFile.dll))</MD5_Binary>
+    <MD5>&quot;$(BuildTool)&quot; &quot;$(MD5_Binary)&quot;</MD5>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Core' And '$(OS)'=='Unix'">
+    <UnixExecutor>mono</UnixExecutor>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Verbosity>-verbosity=</Verbosity>
+  </PropertyGroup>
+
+  <Target Name="ValidateVerbosity" Condition="$(CAKE_ARGUMENTS.Contains('$(Verbosity)'))">
+    <PropertyGroup>
+      <Length>$(Verbosity.Length)</Length>
+      <Index>$(CAKE_ARGUMENTS.IndexOf('$(Verbosity)'))</Index>
+      <Index>$([MSBuild]::Add($(Index), $(Length)))</Index>
+      <IndexOfSpace>$(CAKE_ARGUMENTS.IndexOf(' ', $(Index)))</IndexOfSpace>
+      <Length Condition="'$(IndexOfSpace)'!='-1'">$([MSBuild]::Subtract($(IndexOfSpace), $(Index)))</Length>
+      <VerbosityValue Condition="'$(IndexOfSpace)'!='-1'">$(CAKE_ARGUMENTS.Substring($(Index), $(Length)))</VerbosityValue>
+      <VerbosityValue Condition="'$(IndexOfSpace)'=='-1'">$(CAKE_ARGUMENTS.Substring($(Index)))</VerbosityValue>
+    </PropertyGroup>
+    <Error
+      Text="'$(Verbosity)' can be set to one of the following values: 'Quiet', 'Minimal', 'Normal', 'Verbose' or 'Diagnostic'. Instead it equal to the '$(VerbosityValue)'."
+      Condition="'$(VerbosityValue)'!='Quiet' And '$(VerbosityValue)'!='Minimal' And '$(VerbosityValue)'!='Normal' And '$(VerbosityValue)'!='Verbose' And '$(VerbosityValue)'!='Diagnostic'" />
+  </Target>
+
+  <Target Name="MD5Tool" Condition="!Exists('$(MD5_Binary)')">
+    <WriteLinesToFile
+      File="$(MD5HashFile_csproj)"
+      Lines="@(csproj)"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+
+    <WriteLinesToFile
+      File="$(MD5HashFile_cs)"
+      Lines="@(cs)"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+
+    <MSBuild
+      Condition="'$(MSBuildRuntimeType)'=='Full'"
+      BuildInParallel="true"
+      Projects="$(MD5HashFile_csproj)"
+      Properties="Configuration=Release;OutputPath=$(TOOLS_DIR)" />
+
+    <MSBuild
+      Condition="'$(MSBuildRuntimeType)'=='Core'"
+      BuildInParallel="true"
+      Projects="$(MD5HashFile_csproj)"
+      Targets="Restore;Build"
+      Properties="Configuration=Release" />
+  </Target>
+
+  <Import Project="$(MSBuildBinPath)\Microsoft.Common.CurrentVersion.targets" Condition="'$(MSBuildRuntimeType)'=='Full'"/>
+  <Import Project="$(MSBuildToolsPath)/NuGet.targets" Condition="'$(MSBuildRuntimeType)'=='Core'"/>
+
+  <Target Name="Bootstrap" DependsOnTargets="ValidateVerbosity">
+    <!-- Make sure the tools folder exist -->
+    <MakeDir
+      Condition="!Exists('$(TOOLS_DIR)')"
+      Directories="$(TOOLS_DIR)" />
+
+    <CallTarget Targets="MD5Tool" />
+
+    <Error
+      Text="Version of MSBuild should be 15.8 or above - instead it equal to the '$(MSBuildVersion)'."
+      Condition="$(MSBuildVersion) &lt; 15.8" />
+
+    <!-- Make sure that packages.config exist -->
+    <DownloadFile
+      Condition="!Exists('$(PACKAGES_CONFIG)') And '$(ForceDownloaPackagesConfig)'!=''"
+      SourceUrl="https://cakebuild.net/download/bootstrapper/packages"
+      DestinationFolder="$(TOOLS_DIR)">
+      <Output TaskParameter="DownloadedFile" PropertyName="DOWNLOADED_PACKAGES_CONFIG" />
+    </DownloadFile>
+
+    <Move
+      Condition="!Exists('$(PACKAGES_CONFIG)') And '$(ForceDownloaPackagesConfig)'!='' And Exists('$(DOWNLOADED_PACKAGES_CONFIG)') And '$(DOWNLOADED_PACKAGES_CONFIG)'!='$(PACKAGES_CONFIG)'"
+      SourceFiles="$(DOWNLOADED_PACKAGES_CONFIG)"
+      DestinationFiles="$(PACKAGES_CONFIG)" />
+
+    <WriteLinesToFile
+      Condition="!Exists('$(PACKAGES_CONFIG)') And '$(ForceDownloaPackagesConfig)'==''"
+      File="$(PACKAGES_CONFIG)"
+      Lines="@(packages_config)"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+
+    <!-- Make sure that packages.config exist at this point -->
+    <Error
+      Text="Could not find packages.config at '$(PACKAGES_CONFIG)'."
+      Condition="!Exists('$(PACKAGES_CONFIG)')" />
+
+    <!-- Download NuGet if it does not exist -->
+    <DownloadFile
+      Condition="!Exists('$(NUGET_EXE)') And '$(ForceDownloadNuGetFile)'!=''"
+      SourceUrl="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+      DestinationFolder="$(TOOLS_DIR)">
+      <Output TaskParameter="DownloadedFile" PropertyName="DOWNLOADED_NUGET_EXE" />
+    </DownloadFile>
+
+    <Move
+      Condition="!Exists('$(NUGET_EXE)') And '$(ForceDownloadNuGetFile)'!='' And Exists('$(DOWNLOADED_NUGET_EXE)') And '$(DOWNLOADED_NUGET_EXE)'!='$(NUGET_EXE)'"
+      SourceFiles="$(DOWNLOADED_NUGET_EXE)"
+      DestinationFiles="$(NUGET_EXE)" />
+
+    <GetRestoreSettingsTask
+      Condition="'$(ForceDownloadNuGetFile)'==''"
+      ProjectUniqueName="$(MSBuildProjectFullPath)"
+      MSBuildStartupDirectory="$(MSBuildStartupDirectory)">
+      <Output
+        TaskParameter="OutputPackagesPath"
+        PropertyName="_OutputPackagesPath" />
+    </GetRestoreSettingsTask>
+
+    <PropertyGroup Condition="!Exists('$(NUGET_EXE)') And '$(ForceDownloadNuGetFile)'==''">
+      <DOWNLOADED_NUGET_EXE>$([System.IO.Path]::Combine($(_OutputPackagesPath), nuget.commandline, $(NuGetVersion), tools, NuGet.exe))</DOWNLOADED_NUGET_EXE>
+    </PropertyGroup>
+
+    <Copy
+      Condition="!Exists('$(NUGET_EXE)') And '$(ForceDownloadNuGetFile)'=='' And Exists('$(DOWNLOADED_NUGET_EXE)') And '$(DOWNLOADED_NUGET_EXE)'!='$(NUGET_EXE)'"
+      SourceFiles="$(DOWNLOADED_NUGET_EXE)"
+      DestinationFiles="$(NUGET_EXE)" />
+
+    <ReadLinesFromFile
+      Condition="Exists('$(PACKAGES_CONFIG_MD5)')"
+      File="$(PACKAGES_CONFIG_MD5)">
+      <Output
+        TaskParameter="Lines"
+        ItemName="currentMd5Hash" />
+    </ReadLinesFromFile>
+
+    <Exec
+      Command="$(MD5) &quot;$(PACKAGES_CONFIG)&quot; &quot;$(PACKAGES_CONFIG_MD5)&quot;"
+      WorkingDirectory="$(TOOLS_DIR)" />
+
+    <ReadLinesFromFile
+      Condition="Exists('$(PACKAGES_CONFIG_MD5)')"
+      File="$(PACKAGES_CONFIG_MD5)">
+      <Output
+        TaskParameter="Lines"
+        ItemName="newMd5Hash" />
+    </ReadLinesFromFile>
+
+    <Message Condition="'@(currentMd5Hash)'!='@(newMd5Hash)'" Text="Missing or changed package.config hash..." />
+
+    <ItemGroup Condition="'@(currentMd5Hash)'!='@(newMd5Hash)'">
+      <AllFiles Include="$(TOOLS_DIR)\**" />
+      <AllFiles Remove="$(TOOLS_DIR)\bin\**" />
+      <AllFiles Remove="$(TOOLS_DIR)\obj\**" />
+      <AllFiles Remove="$(MD5HashFile_cs)" />
+      <AllFiles Remove="$(MD5HashFile_csproj)" />
+      <AllFiles Condition="'$(MSBuildRuntimeType)'=='Full'" Remove="$(MD5_Binary)" />
+      <AllFiles Remove="$(PACKAGES_CONFIG)" />
+      <AllFiles Remove="$(PACKAGES_CONFIG_MD5)" />
+      <AllFiles Remove="$(ADDINS_PACKAGES_CONFIG)" />
+      <AllFiles Remove="$(MODULES_PACKAGES_CONFIG)" />
+      <AllFiles Remove="$(NUGET_EXE)" />
+      <AllFiles Remove="$([System.IO.Path]::Combine($(TOOLS_DIR), Cake.Bakery))" />
+    </ItemGroup>
+
+    <Delete
+      Condition="'@(AllFiles)'!=''"
+      Files="@(AllFiles)"
+      TreatErrorsAsWarnings="true">
+      <Output
+        TaskParameter="DeletedFiles"
+        ItemName="DeletedFiles" />
+    </Delete>
+
+    <Message Condition="'@(DeletedFiles)'!='' And '@(DeletedFiles)'!='@(AllFiles)'" Text="Some files was not be deleted." />
+
+    <Message Condition="'@(currentMd5Hash)'!='@(newMd5Hash)'" Text="Restoring tools from NuGet..." />
+
+    <!-- Make sure that NuGet has been installed -->
+    <Error
+      Text="Could not find nuget.exe at '$(NUGET_EXE)'."
+      Condition="!Exists('$(NUGET_EXE)')" />
+
+    <Exec
+      Condition="'@(currentMd5Hash)'!='@(newMd5Hash)' And '$(OS)'!='Unix' And Exists('$(NUGET_EXE)')"
+      ContinueOnError="True"
+      Command="&quot;$(NUGET_EXE)&quot; install -ExcludeVersion -OutputDirectory &quot;$(TOOLS_DIR)&quot; $(NuGetCommandArguments)"
+      WorkingDirectory="$(TOOLS_DIR)">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+
+    <Exec
+      Condition="'@(currentMd5Hash)'!='@(newMd5Hash)' And '$(OS)'=='Unix' And Exists('$(NUGET_EXE)')"
+      ContinueOnError="True"
+      Command="$(UnixExecutor) &quot;$(NUGET_EXE)&quot; install -ExcludeVersion -OutputDirectory &quot;$(TOOLS_DIR)&quot; $(NuGetCommandArguments)"
+      WorkingDirectory="$(TOOLS_DIR)">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+
+    <WriteLinesToFile
+      Condition="Exists('$(PACKAGES_CONFIG_MD5)') And '@(currentMd5Hash)'!='@(newMd5Hash)' And '$(ErrorCode)'!='0'"
+      File="$(PACKAGES_CONFIG_MD5)"
+      Lines="@(currentMd5Hash)"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+
+    <Error
+      Text="Failed to restore tools from NuGet."
+      Condition="'@(currentMd5Hash)'!='@(newMd5Hash)' And '$(ErrorCode)'!='0'" />
+
+    <Message Condition="Exists('$(ADDINS_PACKAGES_CONFIG)')" Text="Restoring addins from NuGet..." />
+
+    <Exec
+      Condition="Exists('$(ADDINS_PACKAGES_CONFIG)') And '$(OS)'!='Unix' And Exists('$(NUGET_EXE)')"
+      Command="&quot;$(NUGET_EXE)&quot; install -ExcludeVersion -OutputDirectory &quot;$(ADDINS_DIR)&quot; $(NuGetCommandArguments)"
+      WorkingDirectory="$(TOOLS_DIR)" />
+
+    <Exec
+      Condition="Exists('$(ADDINS_PACKAGES_CONFIG)') And '$(OS)'=='Unix' And Exists('$(NUGET_EXE)')"
+      Command="$(UnixExecutor) &quot;$(NUGET_EXE)&quot; install -ExcludeVersion -OutputDirectory &quot;$(ADDINS_DIR)&quot; $(NuGetCommandArguments)"
+      WorkingDirectory="$(TOOLS_DIR)" />
+
+    <Message Condition="Exists('$(MODULES_PACKAGES_CONFIG)')" Text="Restoring modules from NuGet..." />
+
+    <Exec
+      Condition="Exists('$(MODULES_PACKAGES_CONFIG)') And '$(OS)'!='Unix' And Exists('$(NUGET_EXE)')"
+      Command="&quot;$(NUGET_EXE)&quot; install -ExcludeVersion -OutputDirectory &quot;$(MODULES_DIR)&quot; $(NuGetCommandArguments)"
+      WorkingDirectory="$(TOOLS_DIR)" />
+
+    <Exec
+      Condition="Exists('$(MODULES_PACKAGES_CONFIG)') And '$(OS)'=='Unix' And Exists('$(NUGET_EXE)')"
+      Command="$(UnixExecutor) &quot;$(NUGET_EXE)&quot; install -ExcludeVersion -OutputDirectory &quot;$(MODULES_DIR)&quot; $(NuGetCommandArguments)"
+      WorkingDirectory="$(TOOLS_DIR)" />
+
+    <!-- Make sure that Cake has been installed -->
+    <Error
+      Text="Could not find Cake.exe at '$(CAKE_EXE)'."
+      Condition="!Exists('$(CAKE_EXE)')" />
+
+    <PropertyGroup Condition="'$(OS)'!='Unix' And Exists('$(CAKE_EXE)') And Exists('$(SCRIPT_FULL_PATH)')">
+      <CakeCommand>&quot;$(CAKE_EXE)&quot; &quot;$(SCRIPT_FULL_PATH)&quot; $(CAKE_ARGUMENTS)</CakeCommand>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Core' And '$(OS)'=='Unix' And Exists('$(CAKE_EXE)') And Exists('$(SCRIPT_FULL_PATH)') And '$(CakeId)'=='Cake'">
+      <CakeCommand>$(UnixExecutor) &quot;$(CAKE_EXE)&quot; &quot;$(SCRIPT_FULL_PATH)&quot; $(CAKE_ARGUMENTS)</CakeCommand>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Core' And '$(OS)'=='Unix' And Exists('$(CAKE_EXE)') And Exists('$(SCRIPT_FULL_PATH)') And '$(CakeId)'=='Cake.CoreCLR'">
+      <CakeCommand>$(BuildTool) &quot;$(CAKE_EXE)&quot; &quot;$(SCRIPT_FULL_PATH)&quot; $(CAKE_ARGUMENTS)</CakeCommand>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(NuGet_ConfigFile)'!=''">
+      <CakeCommand>$(CakeCommand) --NuGet_ConfigFile=&quot;$(NuGet_ConfigFile)&quot;</CakeCommand>
+    </PropertyGroup>
+
+    <!-- Start Cake -->
+    <Exec
+      Command="$(CakeCommand)"
+      WorkingDirectory="$(TOOLS_DIR)" />
+  </Target>
+</Project>
