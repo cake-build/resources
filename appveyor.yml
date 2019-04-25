@@ -1,6 +1,13 @@
 version: 1.0.{build}
+
+image:
+- Visual Studio 2017
+- Ubuntu
+
 build_script:
 - ps: >-
+
+    [int] $Result = 0;
 
     # Temporarily skip verification and opt-in to new in-proc NuGet
 
@@ -17,9 +24,11 @@ build_script:
 
     $OutputA = ./build.ps1 2>&1
 
+    $Result = $LastExitCode
+
     $OutputA
 
-    if ($LastExitCode -ne 0)
+    if ($Result -ne 0)
 
     {
       'PowerShell 3 failed'
@@ -29,22 +38,27 @@ build_script:
 
 
 
+    if (-not $IsCoreCLR) {
 
-    'Testing with PowerShell V2'
+      'Testing with PowerShell V2'
 
-    $OutputB = PowerShell -Version 2.0 -File .\build.ps1 2>&1
+      $OutputB = PowerShell -Version 2.0 -File .\build.ps1 2>&1
 
-    $OutputB
+      $Result = $LastExitCode
 
-    if ($LastExitCode -ne 0)
+      $OutputB
 
-    {
-      'PowerShell 2 failed'
+      if ($Result -ne 0)
 
-      exit 2
+      {
+
+        'PowerShell 2 failed'
+
+        exit 2
+
+      }
+
     }
-
-
 
     'Creating Test Module Files'
 
@@ -61,14 +75,18 @@ build_script:
 
     $OutputC = ./build.ps1 2>&1
 
+    $Result = $LastExitCode
+
     $OutputC
 
-    if ($LastExitCode -ne 0)
+    if ($Result -ne 0)
 
     {
+
       'PowerShell Module failed'
 
       exit 2
+
     }
 
 
