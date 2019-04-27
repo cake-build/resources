@@ -12,9 +12,6 @@ Describe 'Execute build.ps1 file successfully' {
         $normalErrorAction = $Global:ErrorActionPreference
         $Global:ErrorActionPreference = "Stop"
 
-        # Temporarily skip verification and opt-in to new in-proc NuGet
-        $ENV:CAKE_SETTINGS_SKIPVERIFICATION = 'true'
-        $ENV:CAKE_NUGET_USEINPROCESSCLIENT = 'true'
         'Creating Test Cake File' | Write-Output
         'Information("Test success: {0}", DateTime.Now);' > build.cake
     }
