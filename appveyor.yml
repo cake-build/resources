@@ -1,39 +1,41 @@
 version: 1.0.{build}
 
 image:
-- Visual Studio 2017
-- Ubuntu
+  - Visual Studio 2017
+  - Ubuntu
 init:
-- ps: >-
-    Install-Module Pester -Force -Scope CurrentUser;
+  - ps: >-
+      Install-Module Pester -Force -Scope CurrentUser;
 
-    pwsh -command "Install-Module Pester -Force -Scope CurrentUser";
-
+      pwsh -command "Install-Module Pester -Force -Scope CurrentUser";
+build_script:
+  -ps: >-
+    "nothing to build." | Write-Output
 test_script:
-    - ps: >-
-        $ENV:CAKE_SETTINGS_SKIPVERIFICATION='true';
+  - ps: >-
+      $ENV:CAKE_SETTINGS_SKIPVERIFICATION='true';
 
-        $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true';
+      $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true';
 
-        $testresultFolder = '.\tests\testresults';
+      $testresultFolder = '.\tests\testresults';
 
-        "Execute tests for build.ps1 in powershell" | Write-Output
+      "Execute tests for build.ps1 in powershell" | Write-Output
 
-        Invoke-Pester .\tests\Execute-buid-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-buid-tests.xml') -PassThru;
+      Invoke-Pester .\tests\Execute-buid-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-buid-tests.xml') -PassThru;
 
-        if (-not $IsCoreCLR) {
+      if (-not $IsCoreCLR) {
 
-          Invoke-Pester .\tests\Execute-build-on-powershell-V2-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-build-on-powershell-V2-tests.xml') -PassThru;
+        Invoke-Pester .\tests\Execute-build-on-powershell-V2-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-build-on-powershell-V2-tests.xml') -PassThru;
 
-        }
+      }
 
-        $webclient = (New-Object 'System.Net.WebClient');
+      $webclient = (New-Object 'System.Net.WebClient');
 
-        foreach ($testResult in  (Get-ChildItem -Path $testresultFolder)) {
+      foreach ($testResult in  (Get-ChildItem -Path $testresultFolder)) {
 
-          $webclient.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResult.Name));
+        $webclient.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResult.Name));
 
-        }
+      }
 
 artifacts:
   - path: '**\*'
