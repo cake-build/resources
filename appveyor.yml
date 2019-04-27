@@ -1,5 +1,9 @@
 version: 1.0.{build}
 
+environment:
+  CAKE_SETTINGS_SKIPVERIFICATION: true
+  CAKE_NUGET_USEINPROCESSCLIENT: true
+
 image:
   - Visual Studio 2017
   - Ubuntu

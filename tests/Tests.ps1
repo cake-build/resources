@@ -1,6 +1,3 @@
-$ENV:CAKE_SETTINGS_SKIPVERIFICATION = 'true';
-$ENV:CAKE_NUGET_USEINPROCESSCLIENT = 'true';
-
 $testresultFolder = '.\tests\testresults';
 if (-not (Test-Path -Path $testresultFolder)) {
     New-Item -Type Directory -Path $testresultFolder -Force
@@ -17,5 +14,6 @@ if (-not $IsCoreCLR) {
 $webclient = (New-Object 'System.Net.WebClient');
 
 foreach ($testResult in  (Get-ChildItem -Path $testresultFolder)) {
+    "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)" | Write-Output
     $webclient.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResult.FullName));
 }
