@@ -18,6 +18,11 @@ test_script:
       $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true';
 
       $testresultFolder = '.\tests\testresults';
+      if (!(Test-Path -Path $testresultFolder)) {
+
+        New-Item -Type Directory -Path $testresultFolder -Force
+
+      }
 
       "Execute tests for build.ps1 in powershell" | Write-Output
 
