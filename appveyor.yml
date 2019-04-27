@@ -3,145 +3,37 @@ version: 1.0.{build}
 image:
 - Visual Studio 2017
 - Ubuntu
-
-build_script:
+init:
 - ps: >-
+    Install-Module Pester -Force -Scope CurrentUser;
 
-    [int] $Result = 0;
+    pwsh -command "Install-Module Pester -Force -Scope CurrentUser";
 
-    # Temporarily skip verification and opt-in to new in-proc NuGet
+test_script:
+    - ps: >-
+        $ENV:CAKE_SETTINGS_SKIPVERIFICATION='true';
 
-    $ENV:CAKE_SETTINGS_SKIPVERIFICATION='true'
+        $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true';
 
-    $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true'
+        $testresultFolder = '.\tests\testresults';
 
-    'Creating Test Cake File'
+        "Execute tests for build.ps1 in powershell" | Write-Output
 
-    'Information("Test success: {0}", DateTime.Now);' > build.cake
+        Invoke-Pester .\tests\Execute-buid-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-buid-tests.xml') -PassThru;
 
+        if (-not $IsCoreCLR) {
 
-    'Testing with PowerShell Current'
+          Invoke-Pester .\tests\Execute-build-on-powershell-V2-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-build-on-powershell-V2-tests.xml') -PassThru;
 
-    $OutputA = ./build.ps1 2>&1
+        }
 
-    $Result = $LastExitCode
+        $webclient = (New-Object 'System.Net.WebClient');
 
-    $OutputA
+        foreach ($testResult in  (Get-ChildItem -Path $testresultFolder)) {
 
-    if ($Result -ne 0)
+          $webclient.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResult.Name));
 
-    {
-      'PowerShell 3 failed'
-
-      exit 3
-    }
-
-
-
-    if (-not $IsCoreCLR) {
-
-      'Testing with PowerShell V2'
-
-      $OutputB = PowerShell -Version 2.0 -File .\build.ps1 2>&1
-
-      $Result = $LastExitCode
-
-      $OutputB
-
-      if ($Result -ne 0)
-
-      {
-
-        'PowerShell 2 failed'
-
-        exit 2
-
-      }
-
-    }
-
-    'Creating Test Module Files'
-
-    New-Item -ItemType Directory ./tools/modules
-
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Chocolatey.Module"" version=""0.5.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
-
-    New-Item -ItemType Directory ./tools/addins
-
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.MicrosoftTeams"" version=""0.7.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/addins/packages.config
-
-
-    'Testing with PowerShell Module & Addin restore'
-
-    $OutputC = ./build.ps1 2>&1
-
-    $Result = $LastExitCode
-
-    $OutputC
-
-    if ($Result -ne 0)
-
-    {
-
-      'PowerShell Module failed'
-
-      exit 2
-
-    }
-
-
-
-    'Validating StdErr'
-
-    $stdErrA = $OutputA | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
-
-    $stdErrB = $OutputB | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
-
-    $stdErrC = $OutputC | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
-
-
-    $hasStdErrA = ($stdErrA | Measure-Object).Count -gt 0
-
-    $hasStdErrB = ($stdErrB | Measure-Object).Count -gt 0
-
-    $hasStdErrC = ($stdErrC | Measure-Object).Count -gt 0
-
-
-    if ($hasStdErrA)
-
-    {
-        'Std Error V3'
-
-        $stdErrA
-
-        exit 3
-    }
-
-
-    if ($hasStdErrB)
-
-    {
-        'Std Error V2'
-
-        $stdErrB
-
-        exit 2
-    }
-
-
-    if ($hasStdErrC)
-
-    {
-        'Module Error'
-
-        $stdErrC
-
-        exit 4
-    }
-
-
-    'No Issues found'
-
+        }
 
 artifacts:
   - path: '**\*'
