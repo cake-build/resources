@@ -10,7 +10,7 @@ init:
       pwsh -command "Install-Module Pester -Force -Scope CurrentUser";
 build_script:
   - ps: >-
-    "nothing to build." | Write-Output
+      Write-Output "nothing to build."
 
 test_script:
   - ps: >-
