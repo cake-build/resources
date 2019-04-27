@@ -1,4 +1,7 @@
 language: csharp
+env:
+  - CAKE_SETTINGS_SKIPVERIFICATION="true"
+  - CAKE_NUGET_USEINPROCESSCLIENT="true"
 script:
   - echo "Information(Context.Environment.Runtime.CakeVersion.ToString());" > build.cake
   - ./build.sh || exit 1

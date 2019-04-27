@@ -10,10 +10,3 @@ Invoke-Pester .\tests\Execute-buid-tests.ps1 -OutputFormat NUnitXml -OutputFile 
 if (-not $IsCoreCLR) {
     Invoke-Pester .\tests\Execute-build-on-powershell-V2-tests.ps1 -OutputFormat NUnitXml -OutputFile (Join-Path -Path $testresultFolder -ChildPath 'Execute-build-on-powershell-V2-tests.xml') -PassThru;
 }
-
-$webclient = (New-Object 'System.Net.WebClient');
-
-foreach ($testResult in  (Get-ChildItem -Path $testresultFolder)) {
-    "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)" | Write-Output
-    $webclient.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResult.FullName));
-}

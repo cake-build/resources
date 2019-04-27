@@ -20,6 +20,8 @@ test_script:
   - ps: >-
       Invoke-Expression .\tests\Tests.ps1
 
+      Invoke-Expression .\tests\Upload-testresults.ps1
+
 artifacts:
   - path: '**\*'
     name: Resources
