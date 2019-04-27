@@ -9,8 +9,9 @@ init:
 
       pwsh -command "Install-Module Pester -Force -Scope CurrentUser";
 build_script:
-  -ps: >-
+  - ps: >-
     "nothing to build." | Write-Output
+
 test_script:
   - ps: >-
       Invoke-Expression .\tests\Tests.ps1

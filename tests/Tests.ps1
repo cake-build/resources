@@ -2,7 +2,7 @@ $ENV:CAKE_SETTINGS_SKIPVERIFICATION = 'true';
 $ENV:CAKE_NUGET_USEINPROCESSCLIENT = 'true';
 
 $testresultFolder = '.\tests\testresults';
-if (!(Test-Path -Path $testresultFolder)) {
+if (-not (Test-Path -Path $testresultFolder)) {
     New-Item -Type Directory -Path $testresultFolder -Force
 }
 
