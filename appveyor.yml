@@ -13,7 +13,8 @@ build_script:
     "nothing to build." | Write-Output
 test_script:
   - ps: >-
-    & .\tests\Tests.ps1
+      Invoke-Expression .\tests\Tests.ps1
+
 artifacts:
   - path: '**\*'
     name: Resources
