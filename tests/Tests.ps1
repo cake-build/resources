@@ -1,4 +1,7 @@
-$testresultFolder = '.\tests\testresults';
+param (
+    [string]$testresultFolder
+)
+
 if (-not (Test-Path -Path $testresultFolder)) {
     New-Item -Type Directory -Path $testresultFolder -Force
 }

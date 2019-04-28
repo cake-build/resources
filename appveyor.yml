@@ -18,9 +18,11 @@ build_script:
 
 test_script:
   - ps: >-
-      Invoke-Expression .\tests\Tests.ps1
+      $testresultFolder = '.\tests\testresults';
 
-      Invoke-Expression .\tests\Upload-testresults.ps1
+      Invoke-Expression .\tests\Tests.ps1;
+
+      Invoke-Expression .\tests\Upload-testresults.ps1 -testresultFolder $testresultFolder;
 
 artifacts:
   - path: '**\*'
