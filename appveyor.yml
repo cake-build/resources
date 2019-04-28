@@ -20,9 +20,13 @@ test_script:
   - ps: >-
       $testresultFolder = '.\tests\testresults';
 
-      Invoke-Expression .\tests\Tests.ps1 -testresultFolder $testresultFolder;
+      $tests = '.\tests\Tests.ps1 -testresultFolder $testresultFolder;'
 
-      Invoke-Expression .\tests\Upload-testresults.ps1 -testresultFolder $testresultFolder;
+      Invoke-Expression $tests;
+
+      $upload = '.\tests\Upload-testresults.ps1 -testresultFolder $testresultFolder;'
+
+      Invoke-Expression $upload;
 
 artifacts:
   - path: '**\*'
