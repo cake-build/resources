@@ -1,4 +1,6 @@
 language: csharp
+env:
+  - CAKE_SETTINGS_SKIPVERIFICATION="true" CAKE_NUGET_USEINPROCESSCLIENT="true"
 script:
   - echo "Information(Context.Environment.Runtime.CakeVersion.ToString());" > build.cake
   - ./build.sh || exit 1
@@ -8,6 +10,14 @@ script:
   - mkdir tools/addins
   - echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<packages>\r\n    <package id=\"Cake.MicrosoftTeams\" version=\"0.7.0\" />\r\n</packages>" > ./tools/addins/packages.config
   - ./build.sh || exit 1
+  - echo "Test build.ps1 with pester tests"
+  - pwsh -command "Invoke-Expression .\tests\Tests.ps1"
   - ls -D -R
 os:
   - linux
+dist: xenial
+
+before_install:
+  - sudo snap install powershell --classic
+  - pwsh -command "Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted"
+  - pwsh -command "Install-Module -Name Pester"
