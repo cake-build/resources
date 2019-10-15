@@ -1,147 +1,32 @@
 version: 1.0.{build}
 
+environment:
+  CAKE_SETTINGS_SKIPVERIFICATION: true
+  CAKE_NUGET_USEINPROCESSCLIENT: true
+
 image:
-- Visual Studio 2017
-- Ubuntu
+  - Visual Studio 2017
+  - Ubuntu
+init:
+  - ps: >-
+      Install-Module Pester -Force -Scope CurrentUser;
 
+      pwsh -command "Install-Module Pester -Force -Scope CurrentUser";
 build_script:
-- ps: >-
+  - ps: >-
+      Write-Output "nothing to build."
 
-    [int] $Result = 0;
+test_script:
+  - ps: >-
+      $testresultFolder = '.\tests\testresults';
 
-    # Temporarily skip verification and opt-in to new in-proc NuGet
+      $tests = '.\tests\Tests.ps1 -testresultFolder $testresultFolder;'
 
-    $ENV:CAKE_SETTINGS_SKIPVERIFICATION='true'
+      Invoke-Expression $tests;
 
-    $ENV:CAKE_NUGET_USEINPROCESSCLIENT='true'
+      $upload = '.\tests\Upload-testresults.ps1 -testresultFolder $testresultFolder;'
 
-    'Creating Test Cake File'
-
-    'Information("Test success: {0}", DateTime.Now);' > build.cake
-
-
-    'Testing with PowerShell Current'
-
-    $OutputA = ./build.ps1 2>&1
-
-    $Result = $LastExitCode
-
-    $OutputA
-
-    if ($Result -ne 0)
-
-    {
-      'PowerShell 3 failed'
-
-      exit 3
-    }
-
-
-
-    if (-not $IsCoreCLR) {
-
-      'Testing with PowerShell V2'
-
-      $OutputB = PowerShell -Version 2.0 -File .\build.ps1 2>&1
-
-      $Result = $LastExitCode
-
-      $OutputB
-
-      if ($Result -ne 0)
-
-      {
-
-        'PowerShell 2 failed'
-
-        exit 2
-
-      }
-
-    }
-
-    'Creating Test Module Files'
-
-    New-Item -ItemType Directory ./tools/modules
-
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.Chocolatey.Module"" version=""0.5.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/modules/packages.config
-
-    New-Item -ItemType Directory ./tools/addins
-
-    "<?xml version=""1.0"" encoding=""utf-8""?>`r`n<packages>`r`n    <package id=""Cake.MicrosoftTeams"" version=""0.7.0"" />`r`n</packages>" | Out-File -Encoding utf8 -FilePath ./tools/addins/packages.config
-
-
-    'Testing with PowerShell Module & Addin restore'
-
-    $OutputC = ./build.ps1 2>&1
-
-    $Result = $LastExitCode
-
-    $OutputC
-
-    if ($Result -ne 0)
-
-    {
-
-      'PowerShell Module failed'
-
-      exit 2
-
-    }
-
-
-
-    'Validating StdErr'
-
-    $stdErrA = $OutputA | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
-
-    $stdErrB = $OutputB | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
-
-    $stdErrC = $OutputC | ?{ $_ -is [System.Management.Automation.ErrorRecord] }
-
-
-    $hasStdErrA = ($stdErrA | Measure-Object).Count -gt 0
-
-    $hasStdErrB = ($stdErrB | Measure-Object).Count -gt 0
-
-    $hasStdErrC = ($stdErrC | Measure-Object).Count -gt 0
-
-
-    if ($hasStdErrA)
-
-    {
-        'Std Error V3'
-
-        $stdErrA
-
-        exit 3
-    }
-
-
-    if ($hasStdErrB)
-
-    {
-        'Std Error V2'
-
-        $stdErrB
-
-        exit 2
-    }
-
-
-    if ($hasStdErrC)
-
-    {
-        'Module Error'
-
-        $stdErrC
-
-        exit 4
-    }
-
-
-    'No Issues found'
-
+      Invoke-Expression $upload;
 
 artifacts:
   - path: '**\*'
