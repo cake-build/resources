@@ -240,11 +240,9 @@ $CAKE_EXE_INVOCATION = if ($IsLinux -or $IsMacOS) {
     "`"$CAKE_EXE`""
 }
 
-# Build Cake arguments
-$cakeArguments = ""
-If ($Script) {
-    $cakeArguments += @("`"$Script`"");
-}
+ # Build an array (not a string) of Cake arguments to be joined later
+$cakeArguments = @()
+if ($Script) { $cakeArguments += "`"$Script`"" }
 if ($Target) { $cakeArguments += "-target=`"$Target`"" }
 if ($Configuration) { $cakeArguments += "-configuration=$Configuration" }
 if ($Verbosity) { $cakeArguments += "-verbosity=$Verbosity" }
