@@ -50,6 +50,11 @@ Param(
     [string[]]$ScriptArgs
 )
 
+# This is an automatic variables in PowerShell Core, but not in Windows PowerShell 5.x
+if (-not (Test-Path variable:global:IsCoreCLR)) {
+    $IsCoreCLR = $false
+}
+
 # Attempt to set highest encryption available for SecurityProtocol.
 # PowerShell will not set this by default (until maybe .NET 4.6.x). This
 # will typically produce a message for PowerShell v2 (just an info
@@ -155,6 +160,12 @@ if (!(Test-Path $NUGET_EXE)) {
     } catch {
         Throw "Could not download NuGet.exe."
     }
+}
+
+# These are automatic variables in PowerShell Core, but not in Windows PowerShell 5.x
+if (-not (Test-Path variable:global:ismacos)) {
+    $IsLinux = $false
+    $IsMacOS = $false
 }
 
 # Save nuget.exe path to environment to be available to child processed
