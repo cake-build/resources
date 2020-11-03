@@ -27,7 +27,7 @@ else
 fi
 
 # Define default arguments.
-SCRIPT="build.cake"
+SCRIPT=$SCRIPT_DIR/build.cake
 CAKE_ARGUMENTS=()
 
 # Parse arguments.
