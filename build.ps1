@@ -126,6 +126,10 @@ $PACKAGES_CONFIG_MD5 = Join-Path $TOOLS_DIR "packages.config.md5sum"
 $ADDINS_PACKAGES_CONFIG = Join-Path $ADDINS_DIR "packages.config"
 $MODULES_PACKAGES_CONFIG = Join-Path $MODULES_DIR "packages.config"
 
+$env:CAKE_PATHS_TOOLS = $TOOLS_DIR
+$env:CAKE_PATHS_ADDINS = $ADDINS_DIR
+$env:CAKE_PATHS_MODULES = $MODULES_DIR
+
 # Make sure tools folder exists
 if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
     Write-Verbose -Message "Creating tools directory..."
