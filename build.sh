@@ -18,6 +18,10 @@ PACKAGES_CONFIG_MD5=$TOOLS_DIR/packages.config.md5sum
 ADDINS_PACKAGES_CONFIG=$ADDINS_DIR/packages.config
 MODULES_PACKAGES_CONFIG=$MODULES_DIR/packages.config
 
+export CAKE_PATHS_TOOLS=$TOOLS_DIR
+export CAKE_PATHS_ADDINS=$ADDINS_DIR
+export CAKE_PATHS_MODULES=$MODULES_DIR
+
 # Define md5sum or md5 depending on Linux/OSX
 MD5_EXE=
 if [[ "$(uname -s)" == "Darwin" ]]; then
