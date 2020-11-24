@@ -18,6 +18,8 @@ os:
 dist: xenial
 
 before_install:
+  - sudo snap install core
   - sudo snap install powershell --classic
   - pwsh -command "Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted"
   - pwsh -command "Install-Module -Name Pester"
+  - cp dotnet-framework/build.sh build.sh
