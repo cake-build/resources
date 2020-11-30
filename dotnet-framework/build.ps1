@@ -198,7 +198,7 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
     }
 
     Write-Verbose -Message "Restoring tools from NuGet..."
-    
+
     $NuGetOutput = Invoke-Expression "& $env:NUGET_EXE_INVOCATION install -ExcludeVersion -OutputDirectory `"$TOOLS_DIR`""
 
     if ($LASTEXITCODE -ne 0) {
@@ -261,11 +261,11 @@ $CAKE_EXE_INVOCATION = if ($IsLinux -or $IsMacOS) {
  # Build an array (not a string) of Cake arguments to be joined later
 $cakeArguments = @()
 if ($Script) { $cakeArguments += "`"$Script`"" }
-if ($Target) { $cakeArguments += "-target=`"$Target`"" }
-if ($Configuration) { $cakeArguments += "-configuration=$Configuration" }
-if ($Verbosity) { $cakeArguments += "-verbosity=$Verbosity" }
-if ($ShowDescription) { $cakeArguments += "-showdescription" }
-if ($DryRun) { $cakeArguments += "-dryrun" }
+if ($Target) { $cakeArguments += "--target=`"$Target`"" }
+if ($Configuration) { $cakeArguments += "--configuration=$Configuration" }
+if ($Verbosity) { $cakeArguments += "--verbosity=$Verbosity" }
+if ($ShowDescription) { $cakeArguments += "--showdescription" }
+if ($DryRun) { $cakeArguments += "--dryrun" }
 $cakeArguments += $ScriptArgs
 
 # Start Cake
