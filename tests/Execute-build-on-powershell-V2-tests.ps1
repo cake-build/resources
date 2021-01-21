@@ -6,7 +6,7 @@ Describe 'Execute build.ps1 file successfully on Powershell V2' {
         $path = (Join-Path $PSScriptRoot $name)
         New-Item -ItemType Directory -Path $path
         $testPath = $path
-        Copy-Item -Path .\build.ps1 -Destination $testPath
+        Copy-Item -Path .\dotnet-framework\build.ps1 -Destination $testPath
         Push-Location
         Set-Location $testPath
         $normalErrorAction = $Global:ErrorActionPreference
