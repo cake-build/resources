@@ -276,4 +276,12 @@ $cakeArguments += $ScriptArgs
 # Start Cake
 Write-Host "Running build script..."
 Invoke-Expression "& $CAKE_EXE_INVOCATION $($cakeArguments -join " ")"
-exit $LASTEXITCODE
+$cakeExitCode = $LASTEXITCODE
+
+# Clean up environment variables that were created earlier in this bootstrapper
+$env:CAKE_PATHS_TOOLS = $null
+$env:CAKE_PATHS_ADDINS = $null
+$env:CAKE_PATHS_MODULES = $null
+
+# Return exit code
+exit $cakeExitCode

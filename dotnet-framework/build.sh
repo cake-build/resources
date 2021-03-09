@@ -119,3 +119,8 @@ fi
 
 # Start Cake
 exec mono "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
+
+# Clean up environment variables that were created earlier in this bootstrapper
+unset CAKE_PATHS_TOOLS
+unset CAKE_PATHS_ADDINS
+unset CAKE_PATHS_MODULES
